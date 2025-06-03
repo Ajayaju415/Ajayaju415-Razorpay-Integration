@@ -1,0 +1,74 @@
+import { HttpClient } from '@angular/common/http';
+import { Component } from '@angular/core';
+// import * as Razorpay from 'razorpay';
+
+
+declare var Razorpay:any
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss']
+})
+export class AppComponent {
+  title = 'Razorpay';
+
+  constructor(private _http:HttpClient){
+
+  }
+
+
+  makePayment(){
+    this._http.get<any>("http://localhost:9090/api/generateOreder").subscribe(data=>{
+      console.log(data)
+      this.openRazorPayModal(data.data)
+    })
+  }
+
+  openRazorPayModal(data:any){
+    var option={
+      order_id:data.orderId,
+      key:data.key,
+      amount:data.amount,
+      currency:"USD",
+      name:"Dummy Payment",
+      description:"Dummy Payment",
+      image:"data:image/jpeg;base64,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",
+      handler:((response:any)=>{
+        if(response.razorpay_payment_id) {
+          // Payment success
+          alert("Payment Successful. Payment ID: " + response.razorpay_payment_id);
+          // Further actions after successful payment
+        } else {
+          // Payment failure
+          alert("Payment Failed. Error Code: " + response.error.code + ", Description: " + response.error.description);
+          // Further actions in case of payment failure
+        }
+      }),
+      prefill:{
+        name:"Aman",
+        email:"aman.bhumca18@gmail.com",
+        contact:"9977160050"
+      },
+      notes:{
+        address:"Sabalgarh"
+      },
+      theme:{
+        color:"F37254"
+      },
+      modal: {
+        ondismiss: () => {
+          // This function will be called when the Razorpay modal is dismissed (closed)
+          console.log('Razorpay modal closed');
+          // You can add further actions here, if needed
+        }
+      }
+
+
+     
+
+    }
+
+    var razorPayObject = new Razorpay(option);
+    razorPayObject.open()
+  }
+}
